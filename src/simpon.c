@@ -8,6 +8,12 @@
  * Cyrus G. Gabilla
  *
  * Version  0.0.1 (Major.Minor.Revision)
+ *  - First Release
+ *
+ * Version  0.0.2
+ *  - Bug fixes
+ *      - Initialized strings to empty
+ *
  *
  *
  */
@@ -112,7 +118,9 @@ int main(void)
 {
     phoneBook simpon;
     int input;
+
     boolean isPlaying = True;
+    /* int isPlaying = 1; */
 
     initPhoneBook(&simpon);
     while (isPlaying) {
@@ -140,13 +148,13 @@ int main(void)
             }
             case MNUDELE:
             {
-                printf("Delete...");
+                printf("TODO:  Delete...");
 
                 break;
             }
             case MNUFIND:
             {
-                printf("Find...");
+                printf("TODO:  Find...");
 
                 break;
             }
@@ -162,8 +170,8 @@ int main(void)
             }
             default:
             {
-                char msg[MAXSTR];
-                char chrStr[MAXCHR];
+                char msg[MAXSTR] = {'\0'};
+                char chrStr[MAXCHR] = {'\0' };
 
                 strcat(msg, "Unknown input => ");
                 makeStr(input, chrStr);
@@ -189,11 +197,12 @@ void hackSimpon(phoneBook* simpon)
     nnewline(3);
 
     do {
-        printf("Alter count (Y/N)? ");
+        newline();
+        printf("Alter count (y/N)? ");
         input = getche();
-        switch(input) {
+        switch(toupper(input)) {
 
-            case 'y': case 'Y': case '\n':
+            case 'Y':
             {
                 int count;
 
@@ -204,7 +213,7 @@ void hackSimpon(phoneBook* simpon)
             }
         }
 
-        if (toupper(input) == 'Y' || toupper(input) == 'N')
+        if (toupper(input) == 'Y' || toupper(input) == 'N' || input == '\n')
             break;
 
     } while (toupper(input) != 'Y' || toupper(input) != 'N' || input != '\n' || input != EOF);
@@ -264,8 +273,23 @@ int mainSample(void)
     return 0;
 }
 
+/**
+ * The following will be initialized:
+ *  - count, make it zero
+ *  - entries, make every entry member fields to empty string
+ */
 void initPhoneBook(phoneBook* simpon)
 {
+    int i;
+
+    for (i = 0; i < MAXENT; i++) {
+        strcpy(simpon->entry[i].firstName, "");
+        strcpy(simpon->entry[i].lastName, "");
+        strcpy(simpon->entry[i].mInitial, "");
+
+        strcpy(simpon->entry[i].mobileNumber, "");
+    }
+
     simpon->count = 0;
 }
 
@@ -292,8 +316,8 @@ void addEntryPhoneBook(phoneBookEntry entry, phoneBook* simpon)
     printPhoneBookEntry(entry);
     newline();
     if (hasEntrySlot(*simpon)) {
-        char msg[MAXSTR] = "";
-        char intStr[MAXSTR] = "";
+        char msg[MAXSTR] = {'\0'};
+        char intStr[MAXSTR] = {'\0'};
 
         copyPhoneBookEntry (entry, &simpon->entry[simpon->count++]);
         strcat(msg, "Added Contact Entry Slot #");
