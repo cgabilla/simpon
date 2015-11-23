@@ -12,8 +12,15 @@
  *
  * Version  0.0.2
  *  - Bug fixes
- *      - Initialized strings to empty
+ *      - Initialized strings to empty value.
  *
+ * Version  0.0.3
+ * November 20, 2015
+ *
+ *  - Observe standards for naming convention like, println (ln stands for a newline).
+ *      Ex. println, a print having a newline
+ *  - Remove unnecessary functions.
+ *  - Add some UI improvements on the main menu.
  *
  *
  */
@@ -37,10 +44,9 @@ typedef int boolean;
 /* boolean isEmpty = True; */
 /* int isEmpty = 1; */
 
-
-const char* APP_TITLE
-    = "Simpon - Just a Simple Phonebook";
-const char* APP_TAGLINE[]     =  {
+char EMPTY_STRING[]     = "";
+char APP_TITLE[]        = "Simpon - Just a Simple Phonebook";
+char* APP_TAGLINE[]     =  {
     "In Simpon . . .",
     ". . . We could always keep in touch with our LOVE ones."
 };
@@ -55,7 +61,7 @@ const char* APP_TAGLINE[]     =  {
 #define MNUADDE   'A'
 #define MNUHACK   'H'
 
-const char* MENUS[] = {
+char* MENUS[] = {
     "[A]dd a Contact Entry",
     "[V]iew the Simpon Phonebook",
     "[F]ind a Contact",
@@ -82,62 +88,95 @@ typedef struct aPhoneBook {
 
 } phoneBook;
 
+void displaySplashScreen(void);
+void displayByeScreen(void);
+
+void printlnProjectName(void);
+void printlnInfoMessage(char* msg);
 void pressAnyKeyToContinue(void);
-void printSplashScreen(void);
-void printByeMessage(void);
-void printInfoMessage(char* msg);
+
+void initPhoneBook(phoneBook* simpon);
+void initPhoneBookEntry(phoneBookEntry* entry);
 
 void scanPhoneBookEntry(phoneBookEntry* entry);
-void printPhoneBookEntry(phoneBookEntry entry);
-void printPhoneBook(phoneBook simpon);
+void printlnPhoneBookEntry(phoneBookEntry entry);
+void printlnPhoneBook(phoneBook simpon);
 void addEntryPhoneBook(phoneBookEntry entry, phoneBook* simpon);
-void initPhoneBook(phoneBook* simpon);
 void copyPhoneBookEntry (phoneBookEntry entrySource, phoneBookEntry* entryDest);
 void addContactEntry(phoneBook* simpon);
-void printPhoneBookMenu(void);
+void printlnPhoneBookMenu(void);
 boolean hasEntrySlot(phoneBook simpon);
 void hackSimpon(phoneBook* simpon);
 
-int mainSample(void);
-int mainT(void);
-
-
+/** Helper functions that will made easier to print a string on screen with or without newlines. */
 void newline(void);
 void nnewline(int n);
+void print(const char* str);
 void println(const char* str);
-void makeStr(char aChar, char aStr[2]);
+
+/** Will clear the console, depending on the system command. Use "cls" in Windows, otherwise "clear" for Linux */
 void stdclrscr(void);
 
-int mainT(void)
-{
-    mainSample();
-    return 0;
-}
+/**
+ * strings related helper functions
+ **/
+
+void chrToStr(char aChar,
+              char aStr[MAXCHR]);           /* char to string conversion */
+void initString(char str[MAXSTR]);          /* string initializer */
+void getline(char str[MAXSTR]);             /* input a string line with multiple words until the user input an enter */
+
+/** Formatting display in string */
+void toUpperCase(char src[], char dst[]);
+void toUpperCaseFirstOnly(char src[], char dst[]);
+void toMobileNumberFormat(char src[], char dst[]);
+
+/**
+ * The main simpon program will starts here.
+ */
 
 int main(void)
 {
     phoneBook simpon;
-    int input;
-
-    boolean isPlaying = True;
-    /* int isPlaying = 1; */
+    char input = '\0';
 
     initPhoneBook(&simpon);
+    displaySplashScreen();
+
+    /** This is the other way of saying, int isPlaying = 1; */
+    boolean isPlaying = True;
+
     while (isPlaying) {
         stdclrscr();
-        printPhoneBookMenu();
-        input = getch();
+        printlnProjectName();
+        nnewline(2);
+        println("+----------------------------------------------------------------------------------------+");
+        print("|"); printlnInfoMessage("The input is not case-sentitive (e.g.: 'A' and 'a' is the same thing).            |");
+        print("|"); printlnInfoMessage("The boxed character is the user key input (i.e.: [A]dd, 'A' is the user key input.|");
+        println("+----------------------------------------------------------------------------------------+");
+        newline();
+
+        printlnPhoneBookMenu();
+        nnewline(2);
+        print("What would like to do? ");
+        input = getchar();
+
+        /* If the user will not input a value, then get the user to the main menu again. */
+        if (input == '\n') {
+            continue;
+        }
+
         stdclrscr();
         switch(toupper(input)) {
             case MNUQUIT:
             {
                 isPlaying = False;
-                printByeMessage();
+                displayByeScreen();
                 break;
             }
             case MNUVIEW:
             {
-                printPhoneBook(simpon);
+                printlnPhoneBook(simpon);
                 break;
             }
             case MNUMODI:
@@ -170,19 +209,22 @@ int main(void)
             }
             default:
             {
-                char msg[MAXSTR] = {'\0'};
-                char chrStr[MAXCHR] = {'\0' };
+                char msg[MAXSTR];
+                char chrStr[MAXCHR];
+
+                /* initialize strings before using them */
+                initString(msg);
+                initString(chrStr);
 
                 strcat(msg, "Unknown input => ");
-                makeStr(input, chrStr);
+                chrToStr(input, chrStr);
                 strcat(msg, chrStr);
-                printInfoMessage(msg);
+                printlnInfoMessage(msg);
 
                 break;
             }
         }
         pressAnyKeyToContinue();
-
     }
     newline();
     return 0;
@@ -192,8 +234,8 @@ void hackSimpon(phoneBook* simpon)
 {
     char input;
 
-    printInfoMessage("WARNING!!!");
-    printInfoMessage("You are in HACK mode...");
+    printlnInfoMessage("WARNING!!!");
+    printlnInfoMessage("You are in HACK mode...");
     nnewline(3);
 
     do {
@@ -224,53 +266,24 @@ void stdclrscr(void)
     system("cls");  /* for Windows only */
     /* system("clear");   for Linux command only */
 }
-void makeStr(char aChar, char aStr[2])
+void chrToStr(char aChar, char aStr[2])
 {
     aStr[0] = aChar;
     aStr[1] = '\0';
+}
+
+void initString(char str[MAXSTR])
+{
+    strcpy(str, EMPTY_STRING);
 }
 
 void addContactEntry(phoneBook* simpon)
 {
     phoneBookEntry entry;
 
+    stdclrscr();
     scanPhoneBookEntry(&entry);
     addEntryPhoneBook(entry, simpon);
-}
-
-int mainSample(void)
-{
-    phoneBook simpon;
-    phoneBookEntry entry;
-
-    initPhoneBook(&simpon);
-
-    stdclrscr();
-    printSplashScreen();
-    pressAnyKeyToContinue();
-
-    stdclrscr();
-    scanPhoneBookEntry(&entry);
-    addEntryPhoneBook(entry, &simpon);
-
-    pressAnyKeyToContinue();
-    stdclrscr();
-    /* printPhoneBookEntry(entry); */
-    printPhoneBook(simpon);
-
-    scanPhoneBookEntry(&entry);
-    addEntryPhoneBook(entry, &simpon);
-    pressAnyKeyToContinue();
-    stdclrscr();
-
-    printPhoneBook(simpon);
-
-    pressAnyKeyToContinue();
-    stdclrscr();
-    printByeMessage();
-
-    newline();
-    return 0;
 }
 
 /**
@@ -283,14 +296,19 @@ void initPhoneBook(phoneBook* simpon)
     int i;
 
     for (i = 0; i < MAXENT; i++) {
-        strcpy(simpon->entry[i].firstName, "");
-        strcpy(simpon->entry[i].lastName, "");
-        strcpy(simpon->entry[i].mInitial, "");
-
-        strcpy(simpon->entry[i].mobileNumber, "");
+        initPhoneBookEntry(simpon->entry);
     }
 
     simpon->count = 0;
+}
+
+void initPhoneBookEntry(phoneBookEntry* entry)
+{
+    initString(entry->firstName);
+    initString(entry->lastName);
+    initString(entry->mInitial);
+    initString(entry->mobileNumber);
+    initString(entry->firstName);
 }
 
 /* char name[20];
@@ -313,21 +331,25 @@ void addEntryPhoneBook(phoneBookEntry entry, phoneBook* simpon)
     stdclrscr();
     printf("Adding a new Contact Entry for Entry Slot #%d", (simpon->count + 1));
     newline();
-    printPhoneBookEntry(entry);
+    printlnPhoneBookEntry(entry);
     newline();
     if (hasEntrySlot(*simpon)) {
-        char msg[MAXSTR] = {'\0'};
-        char intStr[MAXSTR] = {'\0'};
+        char msg[MAXSTR];
+        char intStr[MAXSTR];
+
+        /* initialize strings before using them */
+        initString(msg);
+        initString(intStr);
 
         copyPhoneBookEntry (entry, &simpon->entry[simpon->count++]);
         strcat(msg, "Added Contact Entry Slot #");
         itoa(simpon->count, intStr, 10);
         strcat(msg, intStr);
 
-        printInfoMessage(msg);
+        printlnInfoMessage(msg);
     } else {
-        printInfoMessage("[simpon] is FULL . . .");
-        printInfoMessage("Cannot add a new Contact Entry . . .");
+        printlnInfoMessage("[simpon] is FULL . . .");
+        printlnInfoMessage("Cannot add a new Contact Entry . . .");
     }
 }
 
@@ -352,7 +374,7 @@ void copyPhoneBookEntry (phoneBookEntry entrySource, phoneBookEntry* entryDest)
     strcpy(entryDest->mobileNumber, entrySource.mobileNumber);
 }
 
-void printInfoMessage(char* msg)
+void printlnInfoMessage(char* msg)
 {
     printf("INFO: %s\n", msg);
 }
@@ -362,7 +384,7 @@ boolean hasEntrySlot(phoneBook simpon)
     return (simpon.count < MAXENT);
 }
 
-void printPhoneBook(phoneBook simpon)
+void printlnPhoneBook(phoneBook simpon)
 {
     int i;
     stdclrscr();
@@ -370,13 +392,14 @@ void printPhoneBook(phoneBook simpon)
     newline();
     for (i = 0; i < simpon.count; i++) {
         printf("#%d - ", (i+1));
-        printPhoneBookEntry(simpon.entry[i]);
+        printlnPhoneBookEntry(simpon.entry[i]);
         newline();
     }
 }
 
-void printByeMessage(void)
+void displayByeScreen(void)
 {
+    stdclrscr();
     printf(APP_TAGLINE[0]);
     newline();
     putchar('\t');
@@ -385,35 +408,171 @@ void printByeMessage(void)
 
 void pressAnyKeyToContinue()
 {
-    nnewline(3);
     printf("Press any key to continue . . .");
     getch();
 }
 
-void printSplashScreen()
+void printlnProjectName(void)
+{
+    print("[[");
+    print(APP_TITLE);
+    println("]]");
+
+}
+
+void displaySplashScreen(void)
 {
     /* printf("%s", APP_TITLE); */
-    printf(APP_TITLE);
+    stdclrscr();
+    printlnProjectName();
+    pressAnyKeyToContinue();
 }
+
+/**
+ * improved reading a string with set of words
+ *
+ */
+
 
 void scanPhoneBookEntry(phoneBookEntry* entry)
 {
-    printf("firstName=");
-    scanf("%s", entry->firstName);
-    printf("lastName=");
-    scanf("%s", entry->lastName);
-    printf("middleName=");
-    scanf("%s", entry->mInitial);
-    printf("mobileNumber=");
-    scanf("%s", entry->mobileNumber);
+    printlnInfoMessage("Please input valid values to avoid errors.");
+    printlnInfoMessage("An enter key is considered as a blank input.");
+
+    println("[FULL NAME ENTRY]");
+    printf("Firstname>>      ");
+    getline(entry->firstName);
+    printf("Lastname>>       ");
+    getline(entry->lastName);
+    printf("Middle Initial>> ");
+    getline(entry->mInitial);
+    println("\n[CONTACT NUMBER]");
+    printlnInfoMessage("Format: DDDDDDDDDDD");
+    printlnInfoMessage("Invalid input characters are non-digit value.");
+    printlnInfoMessage("It will be marked as 'X' when displaying a phoneBookEntry.");
+    printf("Personal No.>>   ");
+    getline(entry->mobileNumber);
+    pressAnyKeyToContinue();
 }
 
-void printPhoneBookEntry(phoneBookEntry entry)
+/**
+ * An example of input, considering an enter is is valid and empty string.
+ */
+void getline(char str[MAXSTR])
 {
-    printf("{\n\tfirstName: %s\n", entry.firstName);
-    printf("\tlastName: %s\n", entry.lastName);
-    printf("\tmiddleName: %s\n", entry.mInitial);
-    printf("\tmobileNumber: %s\n}", entry.mobileNumber);
+    initString(str);
+
+    /* flush the buffer to get an empty buffer to avoid error. */
+    fflush(stdin);
+    fgets(str, MAXSTR, stdin);
+    str[strlen(str)-1] = '\0';
+}
+
+void printlnPhoneBookEntry(phoneBookEntry entry)
+{
+    char tFirst[MAXSTR], tLast[MAXSTR], tMi[MAXCHR];
+    char tMobile[14];
+
+    toUpperCase(entry.lastName, tLast);
+    toUpperCaseFirstOnly(entry.firstName, tFirst);
+    toUpperCase(entry.mInitial, tMi);
+
+    toMobileNumberFormat(entry.mobileNumber, tMobile);
+
+    fflush(stdout);
+    printf("[[Contact for %s]]\n", entry.firstName);
+    printf("%s, %s, %s.\n", tLast, tFirst, tMi);
+    printf("%s", tMobile);
+    newline();
+}
+
+void toUpperCase(char src[MAXSTR], char dst[MAXSTR]) {
+    int len = strlen(src);
+    int i;
+
+    if (len == 0) {
+        strcpy(dst, "<empty>");
+        return;
+    }
+
+
+    initString(dst);
+    for (i = 0; i < len; i++)
+        dst[i] = toupper(src[i]);
+    dst[i] = '\0';
+}
+
+void toUpperCaseFirstOnly(char src[MAXSTR], char dst[MAXSTR]) {
+    int len = strlen(src);
+    int i;
+
+
+    if (len == 0) {
+        strcpy(dst, "<empty>");
+        return;
+    }
+
+    initString(dst);
+    if (len <= 1) {
+        dst[0] = toupper(src[0]);
+        dst[1] = '\0';
+    }
+    else {
+        dst[0] = toupper(src[0]);
+        for (i = 1; i < len; i++)
+            dst[i] = tolower(src[i]);
+        dst[i] = '\0';
+    }
+}
+
+/**
+ * Will replace invalid value as X
+ */
+void toMobileNumberFormat(char src[12], char dst[14])
+{
+    int i, j;
+
+    if (strlen(src) == 0) {
+        strcpy(dst, "<empty>");
+        return;
+    }
+
+    initString(dst);
+    /* dddd-ddd-dddd */
+    for (i = 0, j = 0; i < 4; i++)
+        dst[j++] = src[i] == ' ' ? '0' : src[i];
+    dst[j++] = '-';
+    for (i = 0; i < 3; i++) {
+        switch (src[i+4]) {
+            case '0': case '1': case '2':
+            case '3': case '4': case '5':
+            case '6': case '7': case '8':
+            case '9': {
+                dst[j++] = src[i+4];
+                break;
+            }
+            default: {
+                dst[j++] = 'X';
+                break;
+            }
+        }
+    }
+    dst[j++] = '-';
+    for (i = 0 ; i < 4; i++)
+        switch (src[i+7]) {
+            case '0': case '1': case '2':
+            case '3': case '4': case '5':
+            case '6': case '7': case '8':
+            case '9': {
+                dst[j++] = src[i+7];
+                break;
+            }
+            default: {
+                dst[j++] = 'X';
+                break;
+            }
+        }
+    dst[j] = '\0';
 }
 
 void newline(void)
@@ -434,7 +593,12 @@ void println(const char* str)
     newline();
 }
 
-void printPhoneBookMenu(void)
+void print(const char* str)
+{
+    printf(str);
+}
+
+void printlnPhoneBookMenu(void)
 {
     int i;
     for (i = 0; i < MNULEN; i++)
