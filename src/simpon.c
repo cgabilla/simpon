@@ -16,22 +16,30 @@
  *
  * Version  0.0.3
  * November 20, 2015
- *
  *  - Observe standards for naming convention like, println (ln stands for a newline).
  *      Ex. println, a print having a newline
  *  - Remove unnecessary functions.
  *  - Add some UI improvements on the main menu.
  *
  *
+ * Version 0.0.4
+ * November 28, 2015
+ *  - Modified to run in Windows without the header conio.h
+ *  - Capitalize every first char of every name if has multiple words
+ *  - Fixed empty input in last name.
+ */
+
+/*  December 12, conflict schedule
+ *  // TODO Bug in displaying lastname if empty.
+ *  // Capitalize every letter of the word in first name.
  */
 
 #include <stdio.h>
 #include <string.h>     /* provides strcpy(), strcat()  */
 #include <ctype.h>      /* provides tolower(c), toupper(c)  */
 
-#include <conio.h>      /* provides clrscr();   */
+/* #include <conio.h>      provides clrscr();   */
 #include <stdlib.h>     /* system(cmd)          */
-
 
 #define MAXSTR  20
 #define MAXCHR  2
@@ -88,6 +96,7 @@ typedef struct aPhoneBook {
 
 } phoneBook;
 
+void deleteContactEntry(phoneBook*);
 void displaySplashScreen(void);
 void displayByeScreen(void);
 
@@ -111,8 +120,8 @@ void hackSimpon(phoneBook* simpon);
 /** Helper functions that will made easier to print a string on screen with or without newlines. */
 void newline(void);
 void nnewline(int n);
-void print(const char* str);
-void println(const char* str);
+void print(char* str);
+void println(char* str);
 
 /** Will clear the console, depending on the system command. Use "cls" in Windows, otherwise "clear" for Linux */
 void stdclrscr(void);
@@ -124,7 +133,7 @@ void stdclrscr(void);
 void chrToStr(char aChar,
               char aStr[MAXCHR]);           /* char to string conversion */
 void initString(char str[MAXSTR]);          /* string initializer */
-void getline(char str[MAXSTR]);             /* input a string line with multiple words until the user input an enter */
+void getline(char str[MAXSTR]);             /* input a string line with multiple words until the user presses the enter key. */
 
 /** Formatting display in string */
 void toUpperCase(char src[], char dst[]);
@@ -150,23 +159,39 @@ int main(void)
         stdclrscr();
         printlnProjectName();
         nnewline(2);
-        println("+----------------------------------------------------------------------------------------+");
-        print("|"); printlnInfoMessage("The input is not case-sentitive (e.g.: 'A' and 'a' is the same thing).            |");
-        print("|"); printlnInfoMessage("The boxed character is the user key input (i.e.: [A]dd, 'A' is the user key input.|");
-        println("+----------------------------------------------------------------------------------------+");
+        println("+--------------------------------------------------+");
+        print("|"); printlnInfoMessage("The input is not case-sentitive.            |");
+        print("|"); printlnInfoMessage("(e.g.: 'A' and 'a' is the same thing.)      |");
+        print("|"); printlnInfoMessage("The boxed character is the user key input.  |");
+        print("|"); printlnInfoMessage("(i.e.: [A]dd, 'A' is the user key input.)   |");
+        println("+--------------------------------------------------+");
         newline();
 
         printlnPhoneBookMenu();
         nnewline(2);
         print("What would like to do? ");
-        input = getchar();
+        input = getchar();  /* scanf("%c", &input); */
 
-        /* If the user will not input a value, then get the user to the main menu again. */
+        /* If the user will not input a value,
+         * then bring the user to the main menu again. */
         if (input == '\n') {
             continue;
         }
 
         stdclrscr();
+
+        /* char upperChar = toupper(input);
+         * if (upperChar == MNUQUIT) {
+         *      // do something
+         * } else if (upperChar == MNUVIEW) {
+         *      // do something
+         * }    // ...
+         * else {
+         *      // do something
+         * }
+         *
+         *
+         */
         switch(toupper(input)) {
             case MNUQUIT:
             {
@@ -187,6 +212,7 @@ int main(void)
             }
             case MNUDELE:
             {
+                /* deleteContactEntry(&simpon); */
                 printf("TODO:  Delete...");
 
                 break;
@@ -215,7 +241,9 @@ int main(void)
                 /* initialize strings before using them */
                 initString(msg);
                 initString(chrStr);
-
+                /*
+                 * printf("INFO:    Unknown input => %c", input);
+                 */
                 strcat(msg, "Unknown input => ");
                 chrToStr(input, chrStr);
                 strcat(msg, chrStr);
@@ -224,10 +252,18 @@ int main(void)
                 break;
             }
         }
+        newline();
         pressAnyKeyToContinue();
+
+        getchar();
     }
     newline();
     return 0;
+}
+
+void deleteContactEntry(phoneBook* simpon) {
+    /* input entry to be deleted */
+    /* modify simpon */
 }
 
 void hackSimpon(phoneBook* simpon)
@@ -241,7 +277,8 @@ void hackSimpon(phoneBook* simpon)
     do {
         newline();
         printf("Alter count (y/N)? ");
-        input = getche();
+        /* input = getche();    */
+        input = getchar();
         switch(toupper(input)) {
 
             case 'Y':
@@ -274,6 +311,7 @@ void chrToStr(char aChar, char aStr[2])
 
 void initString(char str[MAXSTR])
 {
+    str[0] = '\0';
     strcpy(str, EMPTY_STRING);
 }
 
@@ -308,13 +346,16 @@ void initPhoneBookEntry(phoneBookEntry* entry)
     initString(entry->lastName);
     initString(entry->mInitial);
     initString(entry->mobileNumber);
-    initString(entry->firstName);
 }
 
-/* char name[20];
+/**
+ * char name[20] = "";
  * char first[] = "Cyrus";
  * char last[] = "Gabilla';
  *
+ * //
+ * // append to add after   => str + value  => str value
+ * // prepend to add before => value + str  => value str
  * strcat(name, first);
  * strcat(name, " ");
  * strcat(name, last);
@@ -325,6 +366,19 @@ void initPhoneBookEntry(phoneBookEntry* entry)
  *
  * strlen(name); => 16
  */
+
+void insertStrToStringAfterFirstSpace(char strToInsert[], char inStr[], int maxLen)
+{
+    int i, j;
+    for (i = 0; i < strlen(inStr); i++)
+        if (inStr[i] == ' ')
+            break;
+    j = ++i;
+    i = maxLen;
+    for (; j < strlen(strToInsert) && j < i; j++)
+        inStr[j] = strToInsert[i];
+}
+
 
 void addEntryPhoneBook(phoneBookEntry entry, phoneBook* simpon)
 {
@@ -409,7 +463,8 @@ void displayByeScreen(void)
 void pressAnyKeyToContinue()
 {
     printf("Press any key to continue . . .");
-    getch();
+    /* getch(); */
+    getchar();
 }
 
 void printlnProjectName(void)
@@ -490,38 +545,45 @@ void toUpperCase(char src[MAXSTR], char dst[MAXSTR]) {
     int len = strlen(src);
     int i;
 
-    if (len == 0) {
-        strcpy(dst, "<empty>");
-        return;
-    }
-
-
     initString(dst);
-    for (i = 0; i < len; i++)
-        dst[i] = toupper(src[i]);
-    dst[i] = '\0';
+    if (len <= 0) {
+        strcpy(dst, "<empty>");
+    } else {
+        for (i = 0; i < len; i++)
+            dst[i] = toupper(src[i]);
+        dst[i] = '\0';
+    }
 }
 
 void toUpperCaseFirstOnly(char src[MAXSTR], char dst[MAXSTR]) {
     int len = strlen(src);
     int i;
 
-
-    if (len == 0) {
-        strcpy(dst, "<empty>");
-        return;
-    }
-
     initString(dst);
-    if (len <= 1) {
-        dst[0] = toupper(src[0]);
-        dst[1] = '\0';
-    }
-    else {
-        dst[0] = toupper(src[0]);
-        for (i = 1; i < len; i++)
-            dst[i] = tolower(src[i]);
-        dst[i] = '\0';
+
+    if (len <= 0) {
+        strcpy(dst, "<empty>");
+    } else {
+        if (len <= 1) {
+            dst[0] = toupper(src[0]);
+            dst[1] = '\0';
+        }
+        else {
+            boolean isBeforeSpace = False;
+            dst[0] = toupper(src[0]);
+            for (i = 1; i < len; i++) {
+                if (isBeforeSpace) {
+                    dst[i] = toupper(src[i]);
+                    isBeforeSpace = False;
+                }
+                else
+                    dst[i] = tolower(src[i]);
+
+                if (isspace(src[i]))
+                    isBeforeSpace = True;
+            }
+            dst[i] = '\0';
+        }
     }
 }
 
@@ -587,13 +649,13 @@ void nnewline(int n)
         newline();
 }
 
-void println(const char* str)
+void println(char* str)
 {
     printf(str);
     newline();
 }
 
-void print(const char* str)
+void print(char* str)
 {
     printf(str);
 }

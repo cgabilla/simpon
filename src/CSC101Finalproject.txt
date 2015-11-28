@@ -1,67 +1,67 @@
 Battle of the phoneBook
-	"Be the best phoneBook around the Corner"
-	
-Final Project for CSC 101 
-	
+    "Be the best phoneBook around the Corner"
+
+Final Project for CSC 101
+
 For you to be able to accomplish your final project for this course, we will not continue your individual projects,
-what you will be doing is to hack simpon to make it as your own.  
+what you will be doing is to hack simpon to make it as your own.
 But what if  you started already?  You have the option to stick with the old one OR move to this option.
 
 You are free to do with the code as your startup implementation for the phonebook. To make you get busier,
-look for a partner (but it is optional if you want to be alone in the project). 
- 
+look for a partner (but it is optional if you want to be alone in the project).
+
 
 
 [Instructions]
-1. Identify which operation system you will be working to hack simpon.
+1. Identify which operating system (OS) you will be working to hack simpon.
 2. Choose the specific file intented for your OS
-	simpon.c  -  		For Windows using gcc or Borland Compiler 5.5
-	simpon_linux.c -		For Linux using gcc
+    simpon.c  -             For Windows using gcc or Borland Compiler 5.5
+    simpon_linux.c -        For Linux using gcc
 
 [Required]
 3. Hack simpon to implement these features
-	a.) 	simpon will only accept valid mobileNumber.  
-		A valid mobileNumber is
-			- a length of 11 characters
-			- every character should be a in the set of {'0', '1', '2', ... , '9'}
-			
-	b.)	Find
-		What is Find?
-			- Find could be able to look for a phoneBookEntry in the phoneBook.  
-			- The user could be able to find by 
-				- firstName, 
-				- lastName, and 
-				- mobileNumber.
-			- If the phoneBookEntry exists, it will display the entry
-			- Otherwise, it will inform the user that the entry does not exist
-	c.)	Modify/Edit
-		What is Modify/Edit?
-			- Modify will allow the user to update a phoneBook entry
-			- Before it could update, it will re-use the Find feature of the phoneBook to which entry it will modify
-			- The phoneBook will ask if the phoneBookEntry has found is the phoneBookEntry you would like to modify
-			- If yes, ask the user for the new values or updated values
-			- Otherwise, ask the user what to do or bring the user to the main menu
-			
-	d.)	Delete
-		What is Delete?
-			- Delete feature will remove a phoneBookEntry in simpon.
-			- Before it could delete, it will re-use the Find feature of the phoneBook to which entry will be removed
-			- The phoneBook will ask if the phoneBookEntry has found is the phoneBookEntry you would like to remove
-			- If yes, remove the entry 
-			- Otherwise, ask the user what to do or bring the user to the main menu
-	
-	e.)	Rebrand simpon
-			- Make it as your own
-			- Re-dress (the way you display everything)
-			- rename the name
-			- make it as user friendly as what you think it is
-			
-	f.)	Write a full documentation of your product
-			- It's like a manual of your new phone that you found when you buy a new phone
-			- Creative and presentable
+    a.)     simpon will only accept valid mobileNumber.
+        A valid mobileNumber is
+            - a length of 11 characters
+            - every character should be a in the set of {'0', '1', '2', ... , '9'}
+
+    b.) Find
+        What is Find?
+            - Find could be able to look for a phoneBookEntry in the phoneBook.
+            - The user could be able to find by
+                - firstName,
+                - lastName, and
+                - mobileNumber.
+            - If the phoneBookEntry exists, it will display the entry
+            - Otherwise, it will inform the user that the entry does not exist
+    c.) Modify/Edit
+        What is Modify/Edit?
+            - Modify will allow the user to update a phoneBook entry
+            - Before it could update, it will re-use the Find feature of the phoneBook to which entry it will modify
+            - The phoneBook will ask if the phoneBookEntry has found is the phoneBookEntry you would like to modify
+            - If yes, ask the user for the new values or updated values
+            - Otherwise, ask the user what to do or bring the user to the main menu
+
+    d.) Delete
+        What is Delete?
+            - Delete feature will remove a phoneBookEntry in simpon.
+            - Before it could delete, it will re-use the Find feature of the phoneBook to which entry will be removed
+            - The phoneBook will ask if the phoneBookEntry has found is the phoneBookEntry you would like to remove
+            - If yes, remove the entry
+            - Otherwise, ask the user what to do or bring the user to the main menu
+
+    e.) Rebrand simpon
+            - Make it as your own
+            - Re-dress (the way you display everything)
+            - rename the name
+            - make it as user friendly as what you think it is
+
+    f.) Write a full documentation of your product
+            - It's like a manual of your new phone that you found when you buy a new phone
+            - Creative and presentable
 
 [Extras/Options]
 4. Anything that is not listed in Section No. 3
-	- Plus points
-	- Plus points
-	- Plus points
+    - Plus points
+    - Plus points
+    - Plus points
